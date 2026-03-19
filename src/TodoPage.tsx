@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import type { Todo, TodoStatus } from "./types/todo";
 import TodoNav from "./TodoNav";
 import TodoInput from "./TodoInput";
 import TodoTab from "./TodoTab";
@@ -10,20 +11,20 @@ function TodoPage() {
 
   //  todos state：存所有待辦事項
 
-  const inputRef = useRef(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // status state：控制目前 tab（all / pending / completed）
-  const [status, setStatus] = useState("all");
+  const [status, setStatus] = useState<TodoStatus>("all");
 
   // 初始化：只跑一次（副作用）
-const [todos, setTodos] = useState(() => {
+const [todos, setTodos] = useState<Todo[]>(() => {
   const raw = localStorage.getItem(STORAGE_KEY);
 
   if (!raw) return [];
 
   try {
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
+    return Array.isArray(parsed) ? (parsed as Todo[]) : [];
   } catch {
     return [];
   }
@@ -35,11 +36,11 @@ useEffect(() => {
 }, [todos]);
 
   //  新增 todo（給 TodoInput 使用）
-  const handleAdd = (text) => {
+  const handleAdd = (text: string) => {
     const content = text.trim();
     if (!content) return;
 
-    const newTodo = {
+    const newTodo: Todo = {
       id: Date.now(),
       content,
       checked: false,
@@ -52,7 +53,7 @@ useEffect(() => {
   
 
   // 切換完成狀態（checkbox）
-  const handleToggle = (id) => {
+  const handleToggle = (id: number) => {
     setTodos((prev) =>
       prev.map((todo) =>
         todo.id === id
@@ -64,7 +65,7 @@ useEffect(() => {
 
 
   //  刪除 todo
-  const handleDelete = (id) => {
+  const handleDelete = (id: number) => {
     setTodos((prev) =>
       prev.filter((todo) => todo.id !== id)
     );
@@ -72,7 +73,7 @@ useEffect(() => {
 
 
   // 依 Tab 篩選 todos
-  const filteredTodos = useMemo(() => {
+  const filteredTodos = useMemo<Todo[]>(() => {
     return todos.filter((todo) => {
       if (status === "all") return true;
       if (status === "pending") return !todo.checked;
@@ -86,7 +87,7 @@ useEffect(() => {
   const completedCount = todos.filter((t) => t.checked).length;
 
   // 待辦事項編輯
-  const handleEdit = (id, nextContent) => {
+  const handleEdit = (id: number, nextContent: string) => {
   const content = nextContent.trim();
   if (!content) return;
   setTodos((prev) =>
