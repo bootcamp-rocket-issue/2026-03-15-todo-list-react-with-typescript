@@ -1,10 +1,18 @@
 import { useState } from "react";
+import type { Todo } from "./types/todo";
 
-function TodoList({ todos, onToggle, onDelete, onEdit }) {
-  const [editingId, setEditingId] = useState(null);
+type TodoListProps = {
+  todos: Todo[];
+  onToggle: (id: number) => void;
+  onDelete: (id: number) => void;
+  onEdit: (id: number, nextContent: string) => void;
+};
+
+function TodoList({ todos, onToggle, onDelete, onEdit }: TodoListProps) {
+  const [editingId, setEditingId] = useState < number | null>(null);
   const [draft, setDraft] = useState("");
 
-  const startEdit = (todo) => {
+  const startEdit = (todo: Todo) => {
     setEditingId(todo.id);
     setDraft(todo.content);
   };
@@ -14,14 +22,14 @@ function TodoList({ todos, onToggle, onDelete, onEdit }) {
     setDraft("");
   };
 
-  const saveEdit = (todo) => {
+  const saveEdit = (todo: Todo) => {
     const next = draft.trim();
     if (!next) {
       // 不允許空字串
       cancelEdit();
       return;
     }
-    onEdit?.(todo.id, next);
+    onEdit(todo.id, next);
     setEditingId(null);
     setDraft("");
   };

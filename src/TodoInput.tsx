@@ -1,26 +1,34 @@
-import { useState } from "react";
+import { useState, type ChangeEvent, type KeyboardEvent, type RefObject } from "react";
 
-function TodoInput({ onAdd , inputRef }) {
+type TodoInputProps = {
+  onAdd: (text: string) => void;
+  inputRef: RefObject<HTMLInputElement | null>;
+};
+
+function TodoInput({ onAdd, inputRef }: TodoInputProps) {
   const [value, setValue] = useState("");
 
   const submit = () => {
-    onAdd?.(value);
+    onAdd(value);
     setValue("");
   };
 
-  const onKeyDown = (e) => {
+  const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") submit();
   };
 
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setValue(e.target.value);
+  };
+
   return (
-    <>
     <div className="w-full flex relative mb-8 shadow-md">
       <input
         className="w-full h-[47px] rounded-[10px] pl-4"
         type="text"
         placeholder="請輸入待辦事項"
         value={value}
-        onChange={(e) => setValue(e.target.value)}
+        onChange={handleChange}
         onKeyDown={onKeyDown}
         ref={inputRef}
       />
@@ -33,7 +41,6 @@ function TodoInput({ onAdd , inputRef }) {
         <i className="fa-solid fa-plus" />
       </button>
     </div>
-    </>
   );
 }
 
